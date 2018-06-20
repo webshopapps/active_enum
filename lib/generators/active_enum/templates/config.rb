@@ -1,6 +1,5 @@
 # Form helper integration
-# require 'active_enum/form_helpers/formtastic'  # for Formtastic <2
-# require 'active_enum/form_helpers/formtastic2' # for Formtastic 2.x
+# require 'active_enum/form_helpers/simple_form' # for SimpleForm
 
 ActiveEnum.setup do |config|
 
@@ -9,6 +8,9 @@ ActiveEnum.setup do |config|
 
   # Return name string as value for attribute method
   # config.use_name_as_value = false
+
+  # Raise exception ActiveEnum::NotFound if enum value for a given id or name is not found
+  # config.raise_on_not_found = false
 
   # Storage of values (:memory, :i18n)
   # config.storage = :memory

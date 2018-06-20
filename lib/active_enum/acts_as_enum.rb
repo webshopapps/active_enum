@@ -7,9 +7,9 @@ module ActiveEnum
         extend ClassMethods
         class_attribute :active_enum_options
         self.active_enum_options = options.reverse_merge(:name_column => 'name')
-        scope :enum_values, select("#{primary_key}, #{active_enum_options[:name_column]}").
-                            where(active_enum_options[:conditions]).
-                            order("#{primary_key} #{active_enum_options[:order]}")
+        scope :enum_values, proc { select("#{primary_key}, #{active_enum_options[:name_column]}").
+                                   where(active_enum_options[:conditions]).
+                                   order("#{primary_key} #{active_enum_options[:order]}") }
       end
 
     end
@@ -29,7 +29,7 @@ module ActiveEnum
       end
 
       def [](index)
-        if index.is_a?(Fixnum)
+        if index.is_a?(Integer) || index.is_a?(String)
           v = lookup_by_id(index)
           v.send(active_enum_options[:name_column]) unless v.blank?
         else
@@ -45,7 +45,7 @@ module ActiveEnum
       end
 
       def lookup_by_name(index)
-        enum_values.where("#{active_enum_options[:name_column]} like ?", index.to_s).first
+        enum_values.where("#{active_enum_options[:name_column]} like lower(?)", index.to_s).first
       end
 
     end

@@ -80,10 +80,12 @@ module ActiveEnum
       def define_active_enum_read_method(attribute)
         class_eval <<-DEF
           def #{attribute}(arg=nil)
-            value = super()
-            return if value.nil? && arg.nil?
-
             enum = self.class.active_enum_for(:#{attribute})
+            return enum if arg == :enum
+
+            value = super()
+            return if value.nil?
+
             case arg
             when nil
               #{ActiveEnum.use_name_as_value ? 'enum[value]' : 'value' }
@@ -91,8 +93,6 @@ module ActiveEnum
               value if enum[value]
             when :name
               enum[value]
-            when :enum
-              enum
             when Symbol
               (enum.meta(value) || {})[arg]
             end
@@ -127,7 +127,7 @@ module ActiveEnum
         class_eval <<-DEF
           def #{attribute}?(arg=nil)
             if arg
-                self.#{attribute}(:id) == self.class.active_enum_for(:#{attribute})[arg]
+              self.#{attribute}(:id) == self.class.active_enum_for(:#{attribute})[arg]
             else
               super()
             end
